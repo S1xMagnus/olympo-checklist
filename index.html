@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Olympo System Checklist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Kalam:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Kalam', cursive;
+        }
+
+        #terminal {
+            width: 85%;
+            max-width: 850px;
+            height: 80vh;
+            border: 2px solid #333;
+            padding: 40px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1), inset 0 0 20px rgba(0, 255, 65, 0.05);
+            display: none;
+            overflow-y: auto;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .category {
+            font-family: 'Cinzel', serif;
+            color: #ffd700; 
+            font-size: 1.5rem;
+            margin-top: 30px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #ffd700;
+            display: block;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .line {
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            min-height: 1.6rem;
+        }
+
+        .tick {
+            color: #00ff41;
+            font-weight: bold;
+            margin-right: 15px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 15px #00ff41;
+        }
+
+        .tick.visible {
+            opacity: 1;
+            transform: scale(1.3);
+        }
+
+        .cmd {
+            color: #00ff41;
+            font-family: monospace;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        #startBtn {
+            font-family: 'Cinzel', serif;
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 25px 50px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        #startBtn:hover {
+            background: #ffd700;
+            color: #000;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 1.3rem;
+            background: #ffd700;
+            animation: blink 0.8s infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        #terminal::-webkit-scrollbar { width: 6px; }
+        #terminal::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .final-msg {
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            font-size: 2.2rem;
+            margin-top: 40px;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; text-shadow: 0 0 30px #ffd700; transform: scale(1); }
+            100% { opacity: 0.5; transform: scale(0.98); }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="startBtn">Acceder a la CHECKLIST de OLYMPO</button>
+
+    <div id="terminal">
+        <div id="content"></div>
+        <span id="active-cursor" class="cursor"></span>
+        <div id="finalMsg" class="final-msg">WEB OLYMPO...</div>
+    </div>
+
+    <script>
+        const data = [
+            { type: 'cmd', text: '> Iniciando checklist OLYMPO...' },
+            { type: 'cmd', text: '> Comprobando tareas...' },
+            
+            { type: 'cat', text: '1. PROGRESO PRINCIPAL (OPTIMIZACIÓN)' },
+            { type: 'item', text: 'Página principal mejorada y optimizada' },
+            { type: 'item', text: 'Sección "Nosotros" + "Contáctanos" listas' },
+            { type: 'item', text: 'Catálogo base: Sobremesas y Portátiles' },
+            { type: 'item', text: 'Procesadores Intel y Ryzen integrados' },
+            { type: 'item', text: 'Fuentes, discos y periféricos cargados' },
+            
+            { type: 'cat', text: '2. FUNCIONALIDADES CLAVE' },
+            { type: 'item', text: 'Buscador actualizado y funcionando' },
+            { type: 'item', text: 'Fichas de producto con etiquetas visibles' },
+            { type: 'item', text: 'Productos genéricos ajustados y listos' },
+            
+            { type: 'cat', text: '3. SECCIONES ESPECIALES' },
+            { type: 'item', text: 'Apartado Estudios ⮕ PUBLICADO' },
+            { type: 'item', text: 'Apartado Instituto ⮕ PUBLICADO' },
+            
+            { type: 'cat', text: '4. ÚLTIMOS AJUSTES' },
+            { type: 'item', text: 'Cierre de cajas PC + refrigeración' },
+            { type: 'item', text: 'Pruebas integrales y correcciones' },
+            
+            { type: 'cmd', text: '> ESTADO FINAL: 100% COMPLETADO.' }
+        ];
+
+        const startBtn = document.getElementById('startBtn');
+        const terminal = document.getElementById('terminal');
+        const content = document.getElementById('content');
+        const finalMsg = document.getElementById('finalMsg');
+        const activeCursor = document.getElementById('active-cursor');
+
+        startBtn.addEventListener('click', () => {
+            startBtn.style.display = 'none';
+            terminal.style.display = 'block';
+            playSequence();
+        });
+
+        async function typeText(element, text, speed) {
+            for (let i = 0; i < text.length; i++) {
+                element.innerHTML += text.charAt(i);
+                terminal.scrollTop = terminal.scrollHeight;
+                await new Promise(r => setTimeout(r, speed));
+            }
+        }
+
+        async function playSequence() {
+            for (const line of data) {
+                const div = document.createElement('div');
+                
+                if (line.type === 'cat') {
+                    div.className = 'line category';
+                    content.appendChild(div);
+                    await typeText(div, line.text, 15); 
+                } 
+                else if (line.type === 'cmd') {
+                    div.className = 'line cmd';
+                    content.appendChild(div);
+                    await typeText(div, line.text, 10); 
+                } 
+                else {
+                    div.className = 'line';
+                    const tickSpan = document.createElement('span');
+                    tickSpan.className = 'tick';
+                    tickSpan.innerHTML = '✔';
+                    div.appendChild(tickSpan);
+                    
+                    const textSpan = document.createElement('span');
+                    div.appendChild(textSpan);
+                    content.appendChild(div);
+                    
+                    await typeText(textSpan, line.text, 20); 
+                    
+                    await new Promise(r => setTimeout(r, 50));
+                    tickSpan.classList.add('visible');
+                }
+                
+                await new Promise(r => setTimeout(r, 200)); 
+            }
+            
+            await new Promise(r => setTimeout(r, 500));
+            activeCursor.style.display = 'none';
+            finalMsg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
